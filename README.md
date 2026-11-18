@@ -16,30 +16,30 @@ The framework is **not yet connected to an Agents API session**. This first mile
 
 ### Get started
 
-\`\`\`bash
+```bash
 npm install
 npm test
 npm run sandbox:setup
 npm run sandbox:doctor
 npm run sandbox:smoke -- coder
 npm run sandbox:smoke -- reviewer
-\`\`\`
+```
 
 The image build happens once and the manager provisions and removes all per-agent containers automatically.
 
 ### Commands
 
-\`\`\`bash
+```bash
 npm run chh -- sandbox list
 npm run chh -- sandbox logs <environment-id>
 npm run chh -- sandbox cleanup <environment-id>
-\`\`\`
+```
 
-\`sandboxes.config.json\` contains Docker images, resource limits, and mount permissions. Every profile currently requires \`network: none\`; this is enforced in configuration validation and at Docker creation time.
+`sandboxes.config.json` contains Docker images, resource limits, and mount permissions. Every profile currently requires `network: none`; this is enforced in configuration validation and at Docker creation time.
 
 ### Planned next work
 
-1. Add a restricted egress gateway and run \`codex exec-server\` as the container's primary process.
+1. Add a restricted egress gateway and run `codex exec-server` as the container's primary process.
 2. Connect self-hosted Agents API sessions and track executor connection events.
 3. Add repository checkout, branch creation, and PR publishing.
 4. Add an independent review agent, correction loop, and guarded merge.

@@ -22,9 +22,9 @@ The current smoke-test container runs an idle process without a fixed one-hour t
 
 After enforcing outbound egress policy and obtaining a restricted environment key, the next integration should run the following as the **primary container process**:
 
-\`\`\`bash
+```bash
 codex exec-server --remote "$REMOTE_URL" --environment-id "$ENVIRONMENT_ID"
-\`\`\`
+```
 
 The executor reads its restricted environment key as CODEX_API_KEY. The main OPENAI_API_KEY stays with the orchestrator. No API keys belong in Docker command-line arguments, images, checked-in files, or logs. A production launcher should deliver the environment key through a controlled secret channel and keep it out of Docker inspect and process metadata where feasible.
 
@@ -40,13 +40,13 @@ An interrupted turn must be reconciled with server state before resubmission. Wh
 
 ## Developer experience
 
-- \`npm run sandbox:setup\` builds the development image once; sandboxes themselves are created on demand.
-- \`npm run sandbox:doctor\` checks Docker and configured image availability.
-- \`npm run sandbox:smoke -- coder\` runs the offline lifecycle test.
-- \`npm run chh -- sandbox list\` lists persisted environment records.
-- \`npm run chh -- sandbox logs <environment-id>\` reads the corresponding Docker logs.
-- \`npm run chh -- sandbox cleanup <environment-id>\` removes a registered environment.
-- \`chh run\`, streaming events, cancellation, reconnection, automatic cleanup of orphans, and cost limits remain follow-on milestones.
+- `npm run sandbox:setup` builds the development image once; sandboxes themselves are created on demand.
+- `npm run sandbox:doctor` checks Docker and configured image availability.
+- `npm run sandbox:smoke -- coder` runs the offline lifecycle test.
+- `npm run chh -- sandbox list` lists persisted environment records.
+- `npm run chh -- sandbox logs <environment-id>` reads the corresponding Docker logs.
+- `npm run chh -- sandbox cleanup <environment-id>` removes a registered environment.
+- `chh run`, streaming events, cancellation, reconnection, automatic cleanup of orphans, and cost limits remain follow-on milestones.
 
 ## References
 

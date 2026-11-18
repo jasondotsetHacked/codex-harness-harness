@@ -89,10 +89,13 @@ export class SandboxManager {
       // Never delete the mounted workspace if Docker cannot confirm removal.
       try {
         await this.docker.run(["rm", "-f", id ?? name]);
-        await rm(workspace, { recursive: true, force: true });
       } catch (cleanupError) {
-        throw new AggregateError([error, cleanupError], "Sandbox creation failed and cleanup was incomplete; manual inspection required");
+        // Docker may reject creation before a container exists. That is safe to clean up.
+        if (!(cleanupError instanceof Error) || !/No such container/i.test(cleanupError.message)) {
+          throw new AggregateError([error, cleanupError], "Sandbox creation failed and cleanup was incomplete; manual inspection required");
+        }
       }
+      await rm(workspace, { recursive: true, force: true });
       throw error;
     }
   }
