@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadSandboxConfig, type SandboxConfig } from "../src/config.js";
@@ -10,9 +10,10 @@ import { SandboxManager } from "../src/sandbox-manager.js";
 class FakeDocker implements DockerRunner {
   calls: string[][] = [];
   failStart = false;
+  createOutput = "a".repeat(64);
   async run(args: readonly string[]): Promise<string> {
     this.calls.push([...args]);
-    if (args[0] === "create") return "a".repeat(64);
+    if (args[0] === "create") return this.createOutput;
     if (args[0] === "start" && this.failStart) throw new Error("start failed");
     if (args[0] === "inspect") return "running";
     if (args[0] === "exec") return "v22.0.0";
@@ -76,6 +77,21 @@ test("failed start removes the container and workspace", async (t) => {
   const manager = new SandboxManager(config, docker);
   await assert.rejects(manager.create("coder"), /start failed/);
   assert.equal(docker.calls.at(-1)?.[0], "rm");
+});
+
+test("invalid Docker ID rolls back using the generated container name", async (t) => {
+  const { config, cleanup } = await fixture();
+  t.after(cleanup);
+  const docker = new FakeDocker();
+  docker.createOutput = "invalid container ID";
+  const manager = new SandboxManager(config, docker);
+
+  await assert.rejects(manager.create("coder"), /Docker returned an invalid container ID/);
+  const create = docker.calls[0];
+  const name = create[create.indexOf("--name") + 1];
+  assert.match(name, /^chh-/);
+  assert.deepEqual(docker.calls.slice(1), [["rm", "-f", name]]);
+  assert.deepEqual(await readdir(config.workspaceRoot), []);
 });
 
 test("configuration rejects unrestricted networking", async (t) => {

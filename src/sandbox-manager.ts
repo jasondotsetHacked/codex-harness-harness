@@ -80,8 +80,9 @@ export class SandboxManager {
         // as the container primary process after approved egress is implemented.
         profile.image, "sleep", "infinity"
       ]);
-      id = output.trim();
-      if (!/^[a-f0-9]{12,64}$/.test(id)) throw new Error("Docker returned an invalid container ID");
+      const containerId = output.trim();
+      if (!/^[a-f0-9]{12,64}$/.test(containerId)) throw new Error("Docker returned an invalid container ID");
+      id = containerId;
       await this.docker.run(["start", id]);
       return { id, profile: profileName, workspace };
     } catch (error) {
