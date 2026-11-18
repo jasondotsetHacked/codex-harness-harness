@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "workspaceRoot": "./.sandbox-workspaces",
+  "profiles": {
+    "coder": {
+      "image": "node:22-alpine",
+      "cpus": 2,
+      "memory": "2g",
+      "pidsLimit": 128,
+      "network": "none",
+      "workspaceReadOnly": false
+    },
+    "reviewer": {
+      "image": "node:22-alpine",
+      "cpus": 1,
+      "memory": "1g",
+      "pidsLimit": 96,
+      "network": "none",
+      "workspaceReadOnly": true
+    }
+  }
+}

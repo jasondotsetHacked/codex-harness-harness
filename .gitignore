@@ -1,0 +1,6 @@
+node_modules/
+dist/
+.sandbox-workspaces/
+*.log
+.env
+.env.*
