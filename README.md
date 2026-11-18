@@ -1,44 +1,47 @@
 # Codex Harness Harness
 
-A local-first development automation system built around the OpenAI Agents API.
+A local-first development automation system built around the OpenAI Agents API. It will coordinate sandboxed coding agents, independent PR review, correction loops, and guarded GitHub merging.
 
-The intended workflow is: developer task → sandboxed coding agent → GitHub pull request → independent review → correction loop → guarded merge. Project-specialist conversations and task planning will be added on top of that workflow.
+## First milestone: Session-aware Docker sandbox management
 
-## First milestone: Local Sandbox Manager
+This branch adds a configuration-driven **Sandbox Manager** in TypeScript. It creates disposable workspaces, provisions separate coder and reviewer profiles, limits resources, and cleans up safely. The new SessionSandboxRegistry stores an environment-to-container mapping and prevents duplicate provisioning.
 
-This branch adds a **configuration-driven Docker sandbox manager** in TypeScript. It provisions disposable per-run workspaces with separate `coder` and `reviewer` profiles, runs commands, inspects container status, and cleans up after execution. It does **not** yet connect to the Agents API or create pull requests.
+The framework is **not yet connected to an Agents API session**. This first milestone keeps containers offline while we design a real egress-filtered connection and executor key delivery.
 
 ### Prerequisites
 
-- Docker Desktop with its WSL2 backend enabled and WSL integration configured.
-- Node.js 22 or later inside a **non-root** WSL2 Linux shell.
-- Docker CLI available from that shell.
+- Docker Desktop with WSL2 backend and WSL integration enabled.
+- Node.js 22 or later in a non-root WSL2 Linux shell.
+- Docker CLI access from that shell.
 
-### Run it
+### Get started
 
-```bash
+\`\`\`bash
 npm install
 npm test
+npm run sandbox:setup
+npm run sandbox:doctor
 npm run sandbox:smoke -- coder
 npm run sandbox:smoke -- reviewer
-```
+\`\`\`
 
-The smoke command creates a container, checks its status, runs `node --version` inside it, and removes both the container and its temporary workspace. Docker may need to pull the configured image on the first run.
+The image build happens once and the manager provisions and removes all per-agent containers automatically.
 
-### Configuration
+### Commands
 
-Edit [`sandboxes.config.json`](sandboxes.config.json) to set an image, CPU/memory/PID limits, or the workspace mount mode for each agent role. All profiles currently require `"network": "none"`. This restriction is intentional until a controlled outbound network path for the Agents API executor is implemented.
+\`\`\`bash
+npm run chh -- sandbox list
+npm run chh -- sandbox logs <environment-id>
+npm run chh -- sandbox cleanup <environment-id>
+\`\`\`
 
-### Next steps
+\`sandboxes.config.json\` contains Docker images, resource limits, and mount permissions. Every profile currently requires \`network: none\`; this is enforced in configuration validation and at Docker creation time.
 
-1. Connect a self-hosted Agents API session and its Codex executor to a sandbox through a controlled network gateway.
-2. Add repository checkout, branch creation, and PR publishing.
-3. Add an independent PR reviewer and an iterative correction loop.
-4. Apply CI and policy gates before automatic merging.
+### Planned next work
 
-Security constraints and known limitations are documented in [`docs/sandbox-security.md`](docs/sandbox-security.md).
+1. Add a restricted egress gateway and run \`codex exec-server\` as the container's primary process.
+2. Connect self-hosted Agents API sessions and track executor connection events.
+3. Add repository checkout, branch creation, and PR publishing.
+4. Add an independent review agent, correction loop, and guarded merge.
 
-## Documentation
-
-- [Agents API overview](https://developers.openai.com/api/docs/guides/agents-api/overview)
-- [Self-hosted sandbox guide](https://developers.openai.com/api/docs/guides/agents-api/environments/self-hosted)
+See [sandbox security](docs/sandbox-security.md) and [Agents API integration notes](docs/agents-api-lifecycle.md).

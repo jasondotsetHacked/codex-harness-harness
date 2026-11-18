@@ -3,7 +3,7 @@
   "workspaceRoot": "./.sandbox-workspaces",
   "profiles": {
     "coder": {
-      "image": "node:22-alpine",
+      "image": "chh-codex:local",
       "cpus": 2,
       "memory": "2g",
       "pidsLimit": 128,
@@ -11,7 +11,7 @@
       "workspaceReadOnly": false
     },
     "reviewer": {
-      "image": "node:22-alpine",
+      "image": "chh-codex:local",
       "cpus": 1,
       "memory": "1g",
       "pidsLimit": 96,
