@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "workspaceRoot": "./.sandbox-workspaces",
+  "profiles": {
+    "coder": {
+      "image": "chh-codex:local",
+      "cpus": 2,
+      "memory": "2g",
+      "pidsLimit": 128,
+      "network": "none",
+      "workspaceReadOnly": false
+    },
+    "reviewer": {
+      "image": "chh-codex:local",
+      "cpus": 1,
+      "memory": "1g",
+      "pidsLimit": 96,
+      "network": "none",
+      "workspaceReadOnly": true
+    }
+  }
+}
